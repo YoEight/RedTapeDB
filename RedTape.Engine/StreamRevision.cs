@@ -4,8 +4,8 @@ namespace RedTape.Engine;
 
 public abstract class StreamRevision
 {
-    public static StreamRevision Start => new StartStreamRevision();
-    public static StreamRevision End => new EndStreamRevision();
+    public static StreamRevision Start { get; } = new StartStreamRevision();
+    public static StreamRevision End { get; } = new EndStreamRevision();
     public static StreamRevision Revision(ulong value) => new RevisionStreamRevision(value);
 
     public abstract void Visit<T>(ref T visitor) where T: IStreamRevisionVisitor;
