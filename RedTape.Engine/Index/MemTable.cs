@@ -28,51 +28,83 @@ public class MemTable
                && entries.TryGetValue(revision, out position);
     }
 
-    public IEnumerable<Entry> ScanForward(ulong key, Position starting)
+    public IEnumerable<Entry> ScanForward(ulong key, StreamRevision starting)
     {
         if (!_inner.TryGetValue(key, out var entries))
             yield break;
 
-        ulong? anchor = starting switch
-        {
-            (true, _, _) => 0,
-            (_, true, _) => null,
-            var (_, _, pos) => pos,
-        };
+        var anchor = new FromStartAnchor();
+        starting.Visit(ref anchor);
 
-        if (anchor == null)
+        if (anchor.Value == null)
             yield break;
 
         foreach (var (revision, position) in entries)
         {
-            if (revision < anchor)
+            if (revision < anchor.Value)
                 continue;
 
             yield return new Entry(key, revision, position);
         }
     }
 
-    public IEnumerable<Entry> ScanBackward(ulong key, Position starting)
+    public IEnumerable<Entry> ScanBackward(ulong key, StreamRevision starting)
     {
         if (!_inner.TryGetValue(key, out var entries))
             yield break;
 
-        ulong? anchor = starting switch
-        {
-            (true, _, _) => null,
-            (_, true, _) => ulong.MaxValue,
-            var (_, _, pos) => pos,
-        };
+        var anchor = new FromEndAnchor();
+        starting.Visit(ref anchor);
 
-        if (anchor == null)
+        if (anchor.Value == null)
             yield break;
 
         foreach (var (revision, position) in entries.Reverse())
         {
-            if (revision > anchor)
+            if (revision > anchor.Value)
                 continue;
 
             yield return new Entry(key, revision, position);
+        }
+    }
+
+    private struct FromStartAnchor : IStreamRevisionVisitor
+    {
+        public ulong? Value { get; private set; }
+
+        public void End()
+        {
+            Value = null;
+        }
+
+        public void Start()
+        {
+            Value = 0;
+        }
+
+        public void Revision(ulong revision)
+        {
+            Value = revision;
+        }
+    }
+
+    private struct FromEndAnchor : IStreamRevisionVisitor
+    {
+        public ulong? Value { get; private set; }
+
+        public void End()
+        {
+            Value = ulong.MaxValue;
+        }
+
+        public void Start()
+        {
+            Value = null;
+        }
+
+        public void Revision(ulong revision)
+        {
+            Value = revision;
         }
     }
 }

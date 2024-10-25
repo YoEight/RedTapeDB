@@ -32,7 +32,7 @@ public class MemTableTests
         table.Put(1, 1, 5);
         table.Put(1, 2, 10);
 
-        using var iter = table.ScanForward(1, Position.Start).GetEnumerator();
+        using var iter = table.ScanForward(1, StreamRevision.Start).GetEnumerator();
 
         iter.MoveNext();
         iter.Current.Stream.Should().Be(1);
@@ -59,7 +59,7 @@ public class MemTableTests
         table.Put(1, 1, 5);
         table.Put(1, 2, 10);
 
-        using var iter = table.ScanForward(1, Position.Revision(1)).GetEnumerator();
+        using var iter = table.ScanForward(1, StreamRevision.Revision(1)).GetEnumerator();
 
         iter.MoveNext();
         iter.Current.Stream.Should().Be(1);
@@ -81,7 +81,7 @@ public class MemTableTests
         table.Put(1, 1, 5);
         table.Put(1, 2, 10);
 
-        using var iter = table.ScanBackward(1, Position.End).GetEnumerator();
+        using var iter = table.ScanBackward(1, StreamRevision.End).GetEnumerator();
 
         iter.MoveNext();
         iter.Current.Stream.Should().Be(1);
@@ -108,7 +108,7 @@ public class MemTableTests
         table.Put(1, 1, 5);
         table.Put(1, 2, 10);
 
-        using var iter = table.ScanBackward(1, Position.Revision(1)).GetEnumerator();
+        using var iter = table.ScanBackward(1, StreamRevision.Revision(1)).GetEnumerator();
 
         iter.MoveNext();
         iter.Current.Stream.Should().Be(1);
