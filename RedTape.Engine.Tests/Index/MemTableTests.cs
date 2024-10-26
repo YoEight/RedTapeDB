@@ -32,19 +32,19 @@ public class MemTableTests
         table.Put(1, 1, 5);
         table.Put(1, 2, 10);
 
-        using var iter = table.ScanForward(1, StreamRevision.Start).GetEnumerator();
+        using var iter = table.ScanForward(1, 0, ulong.MaxValue).GetEnumerator();
 
-        iter.MoveNext();
+        iter.MoveNext().Should().BeTrue();
         iter.Current.Stream.Should().Be(1);
         iter.Current.Revision.Should().Be(0);
         iter.Current.Position.Should().Be(0);
 
-        iter.MoveNext();
+        iter.MoveNext().Should().BeTrue();
         iter.Current.Stream.Should().Be(1);
         iter.Current.Revision.Should().Be(1);
         iter.Current.Position.Should().Be(5);
 
-        iter.MoveNext();
+        iter.MoveNext().Should().BeTrue();
         iter.Current.Stream.Should().Be(1);
         iter.Current.Revision.Should().Be(2);
         iter.Current.Position.Should().Be(10);
@@ -59,14 +59,14 @@ public class MemTableTests
         table.Put(1, 1, 5);
         table.Put(1, 2, 10);
 
-        using var iter = table.ScanForward(1, StreamRevision.Revision(1)).GetEnumerator();
+        using var iter = table.ScanForward(1, 1, ulong.MaxValue).GetEnumerator();
 
-        iter.MoveNext();
+        iter.MoveNext().Should().BeTrue();
         iter.Current.Stream.Should().Be(1);
         iter.Current.Revision.Should().Be(1);
         iter.Current.Position.Should().Be(5);
 
-        iter.MoveNext();
+        iter.MoveNext().Should().BeTrue();
         iter.Current.Stream.Should().Be(1);
         iter.Current.Revision.Should().Be(2);
         iter.Current.Position.Should().Be(10);
@@ -81,9 +81,9 @@ public class MemTableTests
         table.Put(1, 1, 5);
         table.Put(1, 2, 10);
 
-        using var iter = table.ScanBackward(1, StreamRevision.End).GetEnumerator();
+        using var iter = table.ScanBackward(1, ulong.MaxValue, ulong.MaxValue).GetEnumerator();
 
-        iter.MoveNext();
+        iter.MoveNext().Should().BeTrue();
         iter.Current.Stream.Should().Be(1);
         iter.Current.Revision.Should().Be(2);
         iter.Current.Position.Should().Be(10);
@@ -108,14 +108,14 @@ public class MemTableTests
         table.Put(1, 1, 5);
         table.Put(1, 2, 10);
 
-        using var iter = table.ScanBackward(1, StreamRevision.Revision(1)).GetEnumerator();
+        using var iter = table.ScanBackward(1, 1, ulong.MaxValue).GetEnumerator();
 
-        iter.MoveNext();
+        iter.MoveNext().Should().BeTrue();
         iter.Current.Stream.Should().Be(1);
         iter.Current.Revision.Should().Be(1);
         iter.Current.Position.Should().Be(5);
 
-        iter.MoveNext();
+        iter.MoveNext().Should().BeTrue();
         iter.Current.Stream.Should().Be(1);
         iter.Current.Revision.Should().Be(0);
         iter.Current.Position.Should().Be(0);

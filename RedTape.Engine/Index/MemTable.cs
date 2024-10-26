@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Diagnostics;
 using Humanizer;
 
 namespace RedTape.Engine.Index;
@@ -33,41 +34,46 @@ public class MemTable(ulong id) : IEnumerable<Entry>
                && entries.TryGetValue(revision, out position);
     }
 
-    public IEnumerable<Entry> ScanForward(ulong key, StreamRevision starting)
+    public IEnumerable<Entry> ScanForward(ulong key, ulong start, ulong length)
     {
+        if (length == 0)
+            yield break;
+
         if (!_inner.TryGetValue(key, out var entries))
             yield break;
 
-        var anchor = new FromStartAnchor();
-        starting.Visit(ref anchor);
+        var end = length > 0 && start > ulong.MaxValue - length ? ulong.MaxValue : start + length;
 
-        if (anchor.Value == null)
-            yield break;
 
         foreach (var (revision, position) in entries)
         {
-            if (revision < anchor.Value)
+            if (revision < start)
                 continue;
+
+            if (revision >= end)
+                yield break;
 
             yield return new Entry(key, revision, position);
         }
     }
 
-    public IEnumerable<Entry> ScanBackward(ulong key, StreamRevision starting)
+    public IEnumerable<Entry> ScanBackward(ulong key, ulong start, ulong length)
     {
+        if (length == 0)
+            yield break;
+
         if (!_inner.TryGetValue(key, out var entries))
             yield break;
 
-        var anchor = new FromEndAnchor();
-        starting.Visit(ref anchor);
-
-        if (anchor.Value == null)
-            yield break;
+        var end = length >= start ? 0 : start - length;
 
         foreach (var (revision, position) in entries.Reverse())
         {
-            if (revision > anchor.Value)
+            if (revision > start)
                 continue;
+
+            if (revision < end)
+                yield break;
 
             yield return new Entry(key, revision, position);
         }
