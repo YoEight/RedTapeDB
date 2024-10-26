@@ -21,4 +21,22 @@ public readonly struct Entry : IComparable<Entry>
         if (revisionComparison != 0) return revisionComparison;
         return Position.CompareTo(other.Position);
     }
+
+    public Ordering CompareKeyTo(Entry other)
+    {
+        switch (Stream.CompareTo(other.Stream))
+        {
+            case -1:
+                return Ordering.Less;
+            case 1:
+                return Ordering.Greater;
+            default:
+                return Revision.CompareTo(other.Revision) switch
+                {
+                    -1 => Ordering.Less,
+                    1 => Ordering.Greater,
+                    _ => Ordering.Equal
+                };
+        }
+    }
 }

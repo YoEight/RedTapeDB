@@ -10,4 +10,8 @@
       <ProjectReference Include="..\RedTape.Communication\RedTape.Communication.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Humanizer.Core" Version="3.0.0-beta.54" />
+    </ItemGroup>
+
 </Project>

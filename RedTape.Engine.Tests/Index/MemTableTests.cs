@@ -8,7 +8,7 @@ public class MemTableTests
     [Fact]
     public void ShouldLookUp()
     {
-        var table = new MemTable();
+        var table = new MemTable(0);
 
         table.Put(1, 0, 1);
         table.Put(2, 0, 2);
@@ -26,7 +26,7 @@ public class MemTableTests
     [Fact]
     public void ShouldForwardScan()
     {
-        var table = new MemTable();
+        var table = new MemTable(0);
 
         table.Put(1, 0, 0);
         table.Put(1, 1, 5);
@@ -53,7 +53,7 @@ public class MemTableTests
     [Fact]
     public void ShouldForwardScanFromRevision()
     {
-        var table = new MemTable();
+        var table = new MemTable(0);
 
         table.Put(1, 0, 0);
         table.Put(1, 1, 5);
@@ -75,7 +75,7 @@ public class MemTableTests
     [Fact]
     public void ShouldBackwardScan()
     {
-        var table = new MemTable();
+        var table = new MemTable(0);
 
         table.Put(1, 0, 0);
         table.Put(1, 1, 5);
@@ -102,7 +102,7 @@ public class MemTableTests
     [Fact]
     public void ShouldBackwardScanFromRevision()
     {
-        var table = new MemTable();
+        var table = new MemTable(0);
 
         table.Put(1, 0, 0);
         table.Put(1, 1, 5);
