@@ -86,46 +86,6 @@ public class MemTable(ulong id) : IEnumerable<Entry>
         return new Merge(candidates);
     }
 
-    private struct FromStartAnchor : IStreamRevisionVisitor
-    {
-        public ulong? Value { get; private set; }
-
-        public void End()
-        {
-            Value = null;
-        }
-
-        public void Start()
-        {
-            Value = 0;
-        }
-
-        public void Revision(ulong revision)
-        {
-            Value = revision;
-        }
-    }
-
-    private struct FromEndAnchor : IStreamRevisionVisitor
-    {
-        public ulong? Value { get; private set; }
-
-        public void End()
-        {
-            Value = ulong.MaxValue;
-        }
-
-        public void Start()
-        {
-            Value = null;
-        }
-
-        public void Revision(ulong revision)
-        {
-            Value = revision;
-        }
-    }
-
     public IEnumerator<Entry> GetEnumerator()
     {
         foreach (var stream in _inner)
