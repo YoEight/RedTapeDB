@@ -41,8 +41,7 @@ public class MemTable(ulong id) : IEnumerable<Entry>
         if (!_inner.TryGetValue(key, out var entries))
             yield break;
 
-        var end = length > 0 && start > ulong.MaxValue - length ? ulong.MaxValue : start + length;
-
+        var end = start > ulong.MaxValue - length ? ulong.MaxValue : start + length;
 
         foreach (var (revision, position) in entries)
         {
